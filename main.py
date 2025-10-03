@@ -1,13 +1,10 @@
 import os
 from supabase import create_client, Client
 
-URL = os.getenv("SUPABASE_URL")
-KEY = os.getenv("SUPABASE_ANON_KEY")
-EMAIL = os.getenv("USER_EMAIL")
-PWD = os.getenv("USER_PASSWORD")
-
-from supabase import Client
-
+URL = os.getenv("SUPABASE_URL", "https://yijapvjwuhfihszjjomf.supabase.co")
+KEY = os.getenv("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpamFwdmp3dWhmaWhzempqb21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MzcwNTUsImV4cCI6MjA3NTAxMzA1NX0.ynbGR2aZYiHYa3oI2vMou_UwJ5jO_sLTr3x-AyGgQ6o")
+EMAIL = os.getenv("USER_EMAIL", "usuarioCR@example.com")
+PWD = os.getenv("USER_PASSWORD", "cr1234")
 
 def login() -> Client:
     sb: Client = create_client(URL, KEY)
@@ -57,6 +54,40 @@ def show_invoice_with_lines(sb: Client, invoice_id: int):
 
 
 if __name__ == "__main__":
+    
     sb = login()
-    list_my_products(sb)
-    list_my_customers(sb)
+
+    while True:
+        print("\n--- MENU ---")
+        print("1. List my products")
+        print("2. List my customers")
+        print("3. Create invoice")
+        print("4. Add line to invoice")
+        print("5. Show invoice with lines")
+        print("0. Exit")
+
+        choice = input("Choose an option: ")
+
+        if choice == "1":
+            list_my_products(sb)
+        elif choice == "2":
+            list_my_customers(sb)
+        elif choice == "3":
+            customer_id = int(input("Enter customer ID: "))
+            invoice_id = create_invoice(sb, customer_id)
+        elif choice == "4":
+            invoice_id = int(input("Enter invoice ID: "))
+            product_id = int(input("Enter product ID: "))
+            qty_str = input("Enter quantity (default 1): ")
+            qty = float(qty_str) if qty_str else 1
+            price_str = input("Enter unit price (or leave blank to use product price): ")
+            unit_price = float(price_str) if price_str else None
+            add_line(sb, invoice_id, product_id, qty, unit_price)
+        elif choice == "5":
+            invoice_id = int(input("Enter invoice ID: "))
+            show_invoice_with_lines(sb, invoice_id)
+        elif choice == "0":
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice, try again.")
