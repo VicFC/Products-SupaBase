@@ -28,7 +28,7 @@ def list_my_customers(sb: Client):
 
 
 def create_invoice(sb: Client, customer_id: int):
-    inv = sb.table("invoices").insert({"customer_id": customer_id}).select("*").execute()
+    inv = sb.table("invoices").insert([{"customer_id": customer_id}]).execute()
     print("Invoice:", inv.data)
     return inv.data[0]["id"]
 
@@ -42,7 +42,7 @@ def add_line(sb: Client, invoice_id: int, product_id: int, qty: float, unit_pric
         "unit_price": unit_price,
         "line_total": line_total
     }
-    res = sb.table("invoice_lines").insert(line).select("*").execute()
+    res = sb.table("invoice_lines").insert(line).execute()
     print("Line:", res.data)
 
 
@@ -54,7 +54,7 @@ def show_invoice_with_lines(sb: Client, invoice_id: int):
 
 
 if __name__ == "__main__":
-    
+
     sb = login()
 
     while True:
@@ -80,7 +80,7 @@ if __name__ == "__main__":
             product_id = int(input("Enter product ID: "))
             qty_str = input("Enter quantity (default 1): ")
             qty = float(qty_str) if qty_str else 1
-            price_str = input("Enter unit price (or leave blank to use product price): ")
+            price_str = input("Enter unit price: ")
             unit_price = float(price_str) if price_str else None
             add_line(sb, invoice_id, product_id, qty, unit_price)
         elif choice == "5":

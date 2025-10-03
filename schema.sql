@@ -419,5 +419,4 @@ join products p on il.product_id = p.id
 join categories cat on p.category_id = cat.id
 where i.invoice_date >= (current_date - interval '30 days')
 group by p.id, p.name, cat.name
-order by total_sales desc
-limit 10;
+order by total_sales desc limit 5;
