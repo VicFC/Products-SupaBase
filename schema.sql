@@ -349,6 +349,64 @@ using (
 
 -- EXTRA 1: Funciones =======================================================================================================
 
+create or replace function public.create_invoice(
+  customer_id bigint,
+  items jsonb
+)
+returns bigint
+language plpgsql
+as $$
+declare
+  new_invoice_id bigint;
+  item jsonb;
+  v_product_id bigint;
+  v_quantity numeric(12,2);
+  v_unit_price numeric(12,2);
+  v_line_total numeric(14,2);
+  v_total numeric(14,2) := 0;
+begin
+  -- Customer id
+  insert into invoices (customer_id)
+  values (customer_id)
+  returning id into new_invoice_id;
+
+  -- Productos
+  for item in
+    select * from jsonb_array_elements(items)
+  loop
+    v_product_id := (item->>'product_id')::bigint;
+
+    -- Cantidad es 1 si no se pone
+    if (item ? 'quantity') then
+      v_quantity := (item->>'quantity')::numeric;
+    else
+      v_quantity := 1;
+    end if;
+
+    -- Se usa el precio dado y sino el que haya en las tablas
+    if (item ? 'unit_price') then
+      v_unit_price := (item->>'unit_price')::numeric;
+    else
+      select unit_price into v_unit_price
+      from products
+      where id = v_product_id;
+    end if;
+
+    v_line_total := v_quantity * v_unit_price;
+    v_total := v_total + v_line_total;
+
+    -- Insertar invoice_lines
+    insert into invoice_lines (invoice_id, product_id, quantity, unit_price, line_total)
+    values (new_invoice_id, v_product_id, v_quantity, v_unit_price, v_line_total);
+  end loop;
+
+  update invoices
+  set total_amount = v_total where id = new_invoice_id;
+
+  return new_invoice_id; -- Retorna el id de la factura nueva
+end;
+$$;
+
 -- EXTRA 2: Vistas =======================================================================================================
 -- 1. Todas las sales
 create or replace view public.v_sales_fact as
