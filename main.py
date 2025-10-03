@@ -59,35 +59,35 @@ if __name__ == "__main__":
 
     while True:
         print("\n--- MENU ---")
-        print("1. List my products")
-        print("2. List my customers")
-        print("3. Create invoice")
-        print("4. Add line to invoice")
-        print("5. Show invoice with lines")
-        print("0. Exit")
+        print("1. Listar Productos")
+        print("2. Listar Clientes")
+        print("3. Crear Factura Vacía")
+        print("4. Añadir Línea a Factura")
+        print("5. Listar Factura con Líneas")
+        print("0. Salir")
 
-        choice = input("Choose an option: ")
+        choice = input("Escoga una opción: ")
 
         if choice == "1":
             list_my_products(sb)
         elif choice == "2":
             list_my_customers(sb)
         elif choice == "3":
-            customer_id = int(input("Enter customer ID: "))
+            customer_id = int(input("Cliente ID: "))
             invoice_id = create_invoice(sb, customer_id)
         elif choice == "4":
-            invoice_id = int(input("Enter invoice ID: "))
-            product_id = int(input("Enter product ID: "))
-            qty_str = input("Enter quantity (default 1): ")
+            invoice_id = int(input("Factura ID: "))
+            product_id = int(input("Producto ID: "))
+            qty_str = input("Cantidad (default 1): ")
             qty = float(qty_str) if qty_str else 1
-            price_str = input("Enter unit price: ")
+            price_str = input("Precio: ")
             unit_price = float(price_str) if price_str else None
             add_line(sb, invoice_id, product_id, qty, unit_price)
         elif choice == "5":
-            invoice_id = int(input("Enter invoice ID: "))
+            invoice_id = int(input("Factura ID: "))
             show_invoice_with_lines(sb, invoice_id)
         elif choice == "0":
-            print("Goodbye!")
+            print("Saliendo Sistema de Productos SupaBase!")
             break
         else:
-            print("Invalid choice, try again.")
+            print("Opción inválida. Intente de nuevo.")
